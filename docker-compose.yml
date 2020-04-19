@@ -1,0 +1,92 @@
+version: '3'
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: docker_files/docker/Dockerfile
+    image: kevdev/app
+    container_name: app
+    restart: unless-stopped
+    tty: true
+    environment:
+      SERVICE_NAME: app
+      SERVICE_TAG: dev
+    working_dir: /var/www
+    volumes:
+      - ./:/var/www
+      - ./docker_files/php/local.ini:/usr/local/etc/php/conf.d/local.ini
+    networks:
+      - app-network
+
+  node:
+    image: node:10
+    container_name: node
+    restart: unless-stopped
+    working_dir: /var/www
+    volumes:
+      - ./:/var/www
+    tty: true
+    networks:
+      - app-network
+
+  web:
+    image: nginx:1.16.1
+    container_name: web
+    restart: unless-stopped
+    tty: true
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./:/var/www
+      - ./docker_files/nginx/conf.d/:/etc/nginx/conf.d/
+    networks:
+      - app-network
+
+  mysqldb:
+    image: mysql:5.7.22
+    container_name: mysqldb
+    restart: unless-stopped
+    tty: true
+    ports:
+      - "3306:3306"
+    environment:
+      MYSQL_DATABASE: ${DB_DATABASE}
+      MYSQL_USER: ${DB_USERNAME}
+      MYSQL_PASSWORD: ${DB_PASSWORD}
+      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
+      SERVICE_NAME: mysqldb
+      SERVICE_TAG: dev
+    volumes:
+      - dbdata:/var/lib/mysql
+      # - ./docker_files/mysql/my.cnf:/etc/mysql/my.cnf
+    networks:
+      - app-network
+
+  dbbrowser:
+    image: phpmyadmin/phpmyadmin
+    container_name: dbbrowser
+    restart: unless-stopped
+    tty: true
+    environment:
+      PMA_HOSTS: mysqldb
+    ports:
+      - "8080:80"
+    networks:
+      - app-network
+
+  composer:
+    image: composer:latest
+    container_name: composer
+    volumes:
+      - ./:/var/www
+    working_dir: /var/www
+
+networks:
+  app-network:
+    driver: bridge
+
+volumes:
+  dbdata:
+    driver: local

@@ -1,0 +1,43 @@
+#outer-container{
+    margin-top: 30px;
+    background-color: #ced6e0;
+}
+#outer-container-header{
+    background-color: #2f3542;
+    color: #999999;
+}
+
+body{
+    background-color: #222222;
+}
+
+#photo-container{
+    width:300px;
+    height:350px;
+    margin:10px;
+    box-shadow: 10px 10px 5px grey;
+}
+
+#upload-part{
+    color:#999999;
+}
+
+#photo-body{
+    display: inline-block; 
+    background-color: #444444;
+}
+#photo-footer{
+    background-color: #555555;
+}
+
+#photo-og{
+    max-width: 100%;
+    max-height: 100%;
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.download-button{
+    margin-left: 32%;
+}
